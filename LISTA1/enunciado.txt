@@ -1,0 +1,40 @@
+FILA DO TIPO FIFO (o primeiro que entra é o primeiro a sair)
+
+1. Um processo só termina sua execução SE a entrada mandar (ou seja, eu receber um TER ID_do_processo)
+2. Se um processo está em execução por S ciclos, ele é retirado dessa CPU e colocado de volta na fila de execução com o TEMPO TOTAL DE PROCESSAMENTO atualizado (acrescido deses S ciclos). A CPU passa a estar disponível.
+3. Cada processo terá:
+	- ID
+	- Tempo total de processamento 
+	- Ponteiro Next
+4. S deverá ser sempre maior que zero
+5. Sempre os eventos são processados em ordem C, I, A e D.
+6. Em C : O escalonador retira os processos concluídos (TER ID) das CPUs e libera a memória
+7. Em I : O escalonador procura processos para interromper de acordo com a regra 2 acima escrita.
+8. Em A: Processos são adicionados na fila (sempre na última posição)
+9. Em D: Processos são postos para executar, caso tenha processadores livres. (retira-se processos apenas do começo da fila)
+10. Repare que um processo pode ser interrompido em I, e imediatamente recolocado em execução, na mesma ou noutra CPU, em D de uma mesma entrada do escalonador.
+11. A entrada termina com uma linha END
+12. A cada entrada SCH:
+    PROCESSAMENTO:
+    1. [C] Retirar processos concluídos das CPUs (todos os que estão na lista de serem concluídos TER ID)
+    2. [I] Interromper processos que estão em execução por S ciclos nas CPUs
+    3. [A] Adicionar os processos que estão esperando para entrar na fila de execução
+        OBS.: Ou seja temos 3 filas no total
+            - 01 fila de execução  
+            - 01 fila de espera para entrar na fila de execução (processos são adicionados nessa fila pelo comando NEW ID)
+            - 01 fila de processos a serem concluídos (processos são adicionados nessa fila pelo comando TER ID)
+        ***Lembrando que todas seguem a regra FIFO!!!
+    4. [D] Se tiverem CPUs livres, processos da fila de execução são postos para executar. 
+    SAÍDA:
+	1. 01 linha indicando o ciclo atual
+	2. Evento C : lista dos processos concluídos no ATUAL CICLO, 01 por linha, seguidos de seu TEMPO TOTAL DE EXECUÇÃO
+	OBS¹:  o tempo total de execução de um processo deve incluir também todos os ciclos desde que o processo foi colocado em processamento pela última vez até o ciclo atual. Ou seja, se um processo ficou em processamento durante 7 ciclos, o tempo total de processamento será 7S ciclos. (o tempo em espera não é contabilizado)
+	OBS²: NOTE QUE QUANDO NÃO TIVERAM PROCESSOS CONCLUÍDOS NAQUELE CICLO, NADA É RETORNADO NO PASSO 2
+	3. 01 linha indicando a quantidade I de processos interrompidos no ATUAL ciclo
+	4. 01 linha indicando a quantidade A de novos processos adicionados na fila no ATUAL ciclo
+	5. 01 linha indicando a quantidade D de processos despachados (postos para execução) no ATUAL ciclo
+	OBS³: I, A e D sempre são zerados a cada ciclo. 
+13. A entrada NEW ID adiciona um processo novo à fila de espera (ID é único) com 0ns de tempo de CPU
+14. A entrada TER ID indica que o processo ID concluiu COMPLETAMENTE sua execução. Logo, ele é finalizado e retirado do sistema. 
+    Em termos de processamento, esse comando adiciona um processo à fila de processos a serem concluídos.
+15. Cada P guarda um processo retirado da fila de execução e posto para executar. P será do tipo processo, mesmo que, para o user, ele represente as CPUs.
