@@ -17,16 +17,16 @@ FILA DO TIPO FIFO (o primeiro que entra é o primeiro a sair)
 12. A cada entrada SCH:
     PROCESSAMENTO:
     1. [C] Retirar processos concluídos das CPUs (todos os que estão na lista de serem concluídos TER ID)
-    2. [I] Interromper processos que estão em execução por S ciclos nas CPUs
-    3. [A] Adicionar os processos que estão esperando para entrar na fila de execução
+    2. [I] Interromper processos que estão em execução por S ciclos nas CPUs ---OK
+    3. [A] Adicionar os processos que estão esperando para entrar na fila de execução ---OK
         OBS.: Ou seja temos 3 filas no total
             - 01 fila de execução  
             - 01 fila de espera para entrar na fila de execução (processos são adicionados nessa fila pelo comando NEW ID)
             - 01 fila de processos a serem concluídos (processos são adicionados nessa fila pelo comando TER ID)
         ***Lembrando que todas seguem a regra FIFO!!!
-    4. [D] Se tiverem CPUs livres, processos da fila de execução são postos para executar. 
+    4. [D] Se tiverem CPUs livres, processos da fila de execução são postos para executar. --OK
     SAÍDA:
-	1. 01 linha indicando o ciclo atual
+	1. 01 linha indicando o ciclo atual ---OK
 	2. Evento C : lista dos processos concluídos no ATUAL CICLO, 01 por linha, seguidos de seu TEMPO TOTAL DE EXECUÇÃO
 	OBS¹:  o tempo total de execução de um processo deve incluir também todos os ciclos desde que o processo foi colocado em processamento pela última vez até o ciclo atual. Ou seja, se um processo ficou em processamento durante 7 ciclos, o tempo total de processamento será 7S ciclos. (o tempo em espera não é contabilizado)
 	OBS²: NOTE QUE QUANDO NÃO TIVERAM PROCESSOS CONCLUÍDOS NAQUELE CICLO, NADA É RETORNADO NO PASSO 2

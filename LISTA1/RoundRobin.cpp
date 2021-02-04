@@ -149,6 +149,7 @@ void menu(No *execution, No *waiting, No *toFinish){
             case 'S':
                 if(nCicles != 0) incrementTime(processors, cicle);
                 sch(execution, waiting, toFinish, processors, cicle);
+                nCicles++;
                 break;
             case 'E':
                 escape = true;
@@ -156,7 +157,6 @@ void menu(No *execution, No *waiting, No *toFinish){
             default:
                 break;
         }
-        nCicles++;
     }
     
     clear(processors);
@@ -167,15 +167,15 @@ int main() {
     // creating the queues
     No *execution = new No(), *waiting = new No(), *toFinish = new No();
 
-    execution->id = ' ';                // the head node doesn't really have a value, it just points to the first node
+    execution->id = " ";                // the head node doesn't really have a value, it just points to the first node
     execution->time = 0;
     execution->next = NULL;             // i assigned a values to the nodes id just to initialize it with default value (will not be used)
     
-    waiting->id = ' ';
+    waiting->id = " ";
     waiting->time = 0;
     waiting->next = NULL;
     
-    toFinish->id = ' ';
+    toFinish->id = " ";
     toFinish->time = 0;
     toFinish->next = NULL;
 
