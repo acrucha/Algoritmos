@@ -20,7 +20,8 @@ void enqueue(No *head, string id, int time){
     }
     newNo->id = id;                     // assigning the current id to the new node id
     newNo->time = time;
-    newNo->next = cur->next;            // now, the new node is lastNode->next
+    newNo->next = cur->next; 
+    cur->next = newNo;                  // now, the new node is lastNode->next
 }
 
 // function that deletes the first node of the queue
@@ -64,7 +65,7 @@ void interrupt(No *processors, No *execution, int cicle) {
             cur->id = " ";
             cur->time = 0;
             wasInterrupted++;
-        }                  
+        }    
     }
 
     cout << wasInterrupted << endl;
@@ -97,6 +98,8 @@ void despatch(No *processors, No *execution){
             wasDispatched++;
         }
     }
+
+    cout << wasDispatched << endl;
 }
 
 void sch(No *execution, No *waiting, No *toFinish, No *processors, int cicle){
@@ -111,6 +114,8 @@ void sch(No *execution, No *waiting, No *toFinish, No *processors, int cicle){
     add(execution, waiting);
     //[D]
     despatch(processors, execution);
+
+    nCicles++;
 }
 
 // this function increments the total execution time of all programs on processors queue
@@ -122,20 +127,36 @@ void incrementTime(No *processors, int cicle){
     }
 }
 
-void menu(No *execution, No *waiting, No *toFinish){
+void freeingMemory(No *execution, No *waiting, No *toFinish, No *processors){
+    clear(execution);                   
+    clear(waiting);                     
+    clear(toFinish);                    
+    clear(processors);
+
+    delete(execution);
+    delete(waiting);
+    delete(toFinish);
+    delete(processors);
+}
+
+void menu(){
     int cicle, p;
     bool escape = false;
     string command, id;
-
-    No *processors = new No();
-
-    cin >> p >> cicle;
-
-    for(int i = 0; i < p; i++){
-        enqueue(processors, " ", 0);
-    }
-
+    // creating the queues
     while (escape == false){
+        No *execution = new No(), *waiting = new No(), *toFinish = new No(), *processors = new No();
+
+        execution->next = NULL;             // i assigned a values to the nodes id just to initialize it with default value (will not be used)
+        waiting->next = NULL;
+        toFinish->next = NULL;
+
+        cin >> p >> cicle;
+
+        for(int i = 0; i < p; i++){
+            enqueue(processors, " ", 0);
+        }
+
         cin >> command; 
         switch (command[0]){
             case 'N':                   // a process will be inserted on the waitingQueue
@@ -149,7 +170,6 @@ void menu(No *execution, No *waiting, No *toFinish){
             case 'S':
                 if(nCicles != 0) incrementTime(processors, cicle);
                 sch(execution, waiting, toFinish, processors, cicle);
-                nCicles++;
                 break;
             case 'E':
                 escape = true;
@@ -158,36 +178,12 @@ void menu(No *execution, No *waiting, No *toFinish){
                 break;
         }
     }
-    
-    clear(processors);
-    delete(processors);
+
+    // freeingMemory(execution, waiting, toFinish, processors);
 }
 
 int main() { 
-    // creating the queues
-    No *execution = new No(), *waiting = new No(), *toFinish = new No();
 
-    execution->id = " ";                // the head node doesn't really have a value, it just points to the first node
-    execution->time = 0;
-    execution->next = NULL;             // i assigned a values to the nodes id just to initialize it with default value (will not be used)
-    
-    waiting->id = " ";
-    waiting->time = 0;
-    waiting->next = NULL;
-    
-    toFinish->id = " ";
-    toFinish->time = 0;
-    toFinish->next = NULL;
-
-    menu(execution, waiting, toFinish);
-
-    // freeing memory 
-    clear(execution);                   
-    clear(waiting);                     
-    clear(toFinish);                    
-
-    delete(execution);
-    delete(waiting);
-    delete(toFinish);
+    menu();
 
 }
