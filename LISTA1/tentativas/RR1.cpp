@@ -1,0 +1,228 @@
+#include <bits/stdc++.h>
+#define endl '\n'
+
+using namespace std;
+
+typedef struct No{
+    string id;
+    int time;
+    No *next;
+}No;
+
+typedef struct Process {
+  string id;
+  int time;
+} Process;
+
+void list_insert(No *head, string id, int time){ 
+    No *newNo = new No(), *cur = head;  // creating a new node and making a head's copy
+    newNo->id = id;                   // assigning the current id to the new node's id
+    newNo->time = time;
+    newNo->next = cur->next;            
+    head->next = newNo;                 // and, finally, the head's next node is the new node
+}
+
+// function that inserts a node at the bottom of the list
+void enqueue(No *head, string id, int time){
+    No *cur = head;  
+    for(;cur->next != NULL;){           // this while runs through the entire queue to the end
+        cur = cur->next;                // so the current node is at the end of the queue
+    }
+                                        // calling the function that inserts a node to the queue
+    list_insert(cur, id, time);         // in this case, exceptionally, the sended node is not the actually the list head
+                                        // it happens because we want to insert a node at the last position, so we send the last node
+}
+
+// function that deletes the first node of the list
+void dequeue(No *head){
+    No *prox = head->next;              // assigning the head next node to an auxiliary node (prox)
+    head->next = prox->next;            // the new head next node is the prox next node
+    delete(prox);                       // deleting the prox node and freeing memory
+}
+// void deleteFinished(string *toFinish, Process processors[], int p, int *f){
+//     bool test = false;
+//     for(int i = 0; i < (*f); i++){          
+        
+//         if(test){
+//           toFinish = (string *) realloc(toFinish, ((*f)+2)*sizeof(string));
+//         }
+//     }
+// }
+
+bool testFinished(string id, Process processors[], int p){
+
+    for (int i = p; i >= 0; i--)    {
+        if (id == processors[i].id)        {
+            cout << processors[i].id << " " << processors[i].time << endl;
+            processors[i].id = "empty";
+            processors[i].time = 0;
+            return true;
+        }
+    }
+
+  return false;
+}
+
+void deleteFinished(No *toFinish, Process processors[], int p){
+    No *fin = toFinish;
+    string id;
+    for(;fin->next != NULL;){          
+        fin = fin->next;
+        id = fin->id;
+
+        if(testFinished(id, processors, p)){
+          dequeue(toFinish);
+        }
+    }
+}
+
+void interrupt(Process processors[], No *execution, int cicle, int p) {
+    int wasInterrupted = 0;
+
+    for(int i = p; i >= 0; i--){        
+        if(processors[i].id != "empty" && processors[i].time % cicle == 0 && processors[i].time != 0){
+            enqueue(execution, processors[i].id, processors[i].time); // adding the process to the executionQueue 
+            processors[i].id = "empty";
+            processors[i].time = 0;
+            wasInterrupted++;
+        }    
+    }
+
+    cout << wasInterrupted << endl;
+}
+
+void add(No *execution, string *waiting, int *w){
+    int wasAdded = 0;
+    for(int i = *w; i >= 0; i--){
+        enqueue(execution, waiting[i], 0);
+        wasAdded++;
+    }
+    (*w) = -1;
+    waiting[0] = "empty";   
+    waiting = (string *) realloc(waiting, sizeof(string));
+    cout << wasAdded << endl;
+}
+
+void despatch(Process processors[], No *execution, int p){
+    
+    int wasDispatched = 0;
+    for(int i = p; i >= 0; i--){
+        string id;
+        if(processors[i].id == "empty" && execution->next != NULL){                 // if the processor is free to use, that is id = "empty"
+            processors[i].id = (execution->next)->id;
+            processors[i].time = (execution->next)->time;
+            dequeue(execution);
+            wasDispatched++;
+        }
+    }
+    cout << wasDispatched << endl;
+}
+
+// this function increments the total execution time of all programs on processors queue
+void incrementTime(Process processors[], int p){
+    string id;
+    for(int i = 0; i < p; i++){
+      if(processors[i].id != "empty"){
+        processors[i].time++; 
+        cout << processors[i].id << " ->> " << processors[i].time << endl;
+      }
+    }
+}
+
+// string *aloc(string *str, string id, int size){
+//     string *newStr = (string *) realloc(str, (size + 2)*sizeof(string)); 
+
+//     if(newStr == NULL){
+//         exit(-1);
+//     }
+
+//     newStr[size] = id;
+
+//     return newStr;
+// }
+
+// string *sort(string *toFinish, int size){
+//     string *aux = (string *) malloc(size * sizeof(string));
+//     int j = 0;
+//     for(int i = size; i >= 0; i--){
+//         aux[j] = toFinish[i];
+//         j++;
+//     }
+//     return aux;
+// }
+
+
+void menu(No *execution , string *waiting, No* toFinish){
+    int cicle, p, nCicles = 0, w = -1;
+    bool escape = false;
+    string command, id;
+
+    cin >> p >> cicle;
+
+    Process processors[p];
+
+    for(int i = 0; i < p; i++){
+      processors[i].id = "empty";
+      processors[i].time = 0;
+    }
+
+    for(;escape == false;){
+        cin >> command; 
+        switch (command[0]){
+            case 'N':                   // a process will be inserted on the waitingQueue
+                cin >> id;            
+                w++;
+                waiting = (string *) realloc(waiting, (w+1) * sizeof(string));
+                waiting[w] = id;
+                break;
+            case 'T':                   // a process will be inserted on the toFinishQueue
+                cin >> id;
+                enqueue(toFinish, id, 0);
+                break;
+            case 'S':
+                cout << "ciclo " << nCicles << endl;
+                incrementTime(processors, p);
+                //[C]
+                if(toFinish->next != NULL) deleteFinished(toFinish, processors, p);
+                //[I]
+                interrupt(processors, execution, cicle, p);
+                //[A]
+                add(execution, waiting, &w);
+                //[D]
+                despatch(processors, execution, p);
+
+                nCicles++;
+                break;
+                
+            case 'E':
+                escape = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+}
+
+int main() { 
+
+    No *execution = new No(), *toFinish = new No();
+    
+    string *waiting = (string *) malloc(sizeof(string));
+    
+    execution->next = NULL;             
+    execution->id = "empty";             
+    execution->time = 0;      
+
+    toFinish->next = NULL;             
+    toFinish->id = "empty";             
+    toFinish->time = 0;           
+
+    waiting[0] = "empty";   
+
+    menu(execution, waiting, toFinish);
+
+}
+
+// g++ RoundRobin.cpp -o main -Wall
+//./main < entrada.in > saida.out
