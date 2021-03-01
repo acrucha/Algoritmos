@@ -1,0 +1,35 @@
+CUCKOO HASHING
+
+1. Criar 2 tabelas t0 e t1 cada uma com --> M = 2*R <-- posições
+2. Cada uma tem uma função dispersão diferente 
+    Hi(X) = ((Ai * X) mod 2^W) >> (W - R),    para i=0,1 
+3. W = 32 bits -> right shift pra não ter overflow: 
+    N >> i, N é o numero a ser truncado e i é a quantidade de casas (W-R)
+4. a tabela é iniciada com todos os valores como EMPTY
+5. Ai deve ser LONG LONG
+6. Criar uma Classe HashTable
+7. INSERÇÃO DE CHAVE X qualquer
+    a. primeiro nós tentamos colocar X em t0, caso a posição estiver ocupada, nós guardaremos o valor Y que está lá e inserimos X no lugar dele.
+    b. depois, faremos a mesma coisa sendo que na t1 com o valor Y que nós acabamos de pegar. e assim por diante.
+    c. o processo continua dessa forma até que um uma posição livre seja encontrada.
+        APENAS UM NÚMERO MÁXIMO DE *M* TENTATIVAS é permitido.
+    d. ou seja se após M tentativas uma posição vazia não for encontrada, a tabela deve sofrer um REHASHING.
+8. REHASHING    
+    ****ocorre em 2 ocasiões:
+        1. quando acontece o evento citado acima em 7.d.
+        2. IMEDIATAMENTE após a inserção do elemento X, caso tenhamos F > L (fator de carga máximo N/M) em qualquer uma das duas tabelas T0 ou T1.
+    a. se um número máximo de deslocamentos foi atingido, iremos reinserir todos os elementos da coleção numa nova tabela vazia com tamanho 2*M
+        ORDEM: 
+            1. os elementos de t0
+            2. os elementos de t1   
+            3. o elemento que estava sem lugar nas tabelas por conta do limite atingido
+    b. as antigas tabelas são descartadas e substituídas pelas novas.
+9. ENCONTRADA
+    M A0 A1, M tamanho da tabela; A0 e A1 são dois inteiros ímpares usados para as funções de dispersão 
+10. COMANDOS 
+    -> INS X : insere a chave X na coleção
+        SAÍDA:  OK T P, onde T (0 ou 1) representa a tabela e P corresponde à posição final nessa tabela onde a chave foi INCLUÍDA  
+                FAIL, se a chave X já existe na coleção
+    -> QRY X : consulta a chave X na coleção
+        SAÍDA:  OK T P, onde T (0 ou 1) representa a tabela e P corresponde à posição final nessa tabela onde a chave foi ENCONTRADA  
+                FAIL, se a chave X não foi encontrada na coleção
